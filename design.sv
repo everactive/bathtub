@@ -39,4 +39,3 @@ endinterface : calc_if
       end
     end
   endmodule : calculator
-  
