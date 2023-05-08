@@ -1,35 +1,68 @@
-interface calc_if(
-  input logic reset,
-  input logic[80 * 8 - 1:0] item,
-  input logic[7:0] qty,
-  input logic equals,
-  input logic[15:0] price_in_cents,
-  input logic load,
-  output logic[15:0] total_in_cents,
-  output logic err
-);
+interface calc_if ();
+
+    logic reset;
+    logic[80 * 8 - 1:0] item;
+    logic[7:0] qty;
+    logic equals;
+    logic[15:0] price_in_cents;
+    logic load;
+    logic[15:0] total_in_cents;
+    logic err;
+
+    modport dut (
+    input reset,
+    input item,
+    input qty,
+    input equals,
+    input price_in_cents,
+    input load,
+    output total_in_cents,
+    output err
+    );
+
+    modport driver (
+    output reset,
+    output item,
+    output qty,
+    output equals,
+    output price_in_cents,
+    output load,
+    input total_in_cents,
+    input err
+    );
+
+    modport monitor (
+    input reset,
+    input item,
+    input qty,
+    input equals,
+    input price_in_cents,
+    input load,
+    input total_in_cents,
+    input err
+    );
 endinterface : calc_if
 
-  module calculator(calc_if i);
+  module calculator (calc_if i);
     logic[15:0] total_in_cents;
     logic err;
     logic[15:0] price_list[string];
     
-    assign i.total_in_cents = total_in_cents;
-    assign i.err = err;
+    assign i.dut.total_in_cents = total_in_cents;
+    assign i.dut.err = err;
   
-    always @(posedge i.reset or posedge i.load or posedge i.equals) begin
-      if (i.reset) begin
+    always @(posedge i.dut.reset or posedge i.dut.load or posedge i.dut.equals) begin
+      if (i.dut.reset) begin
         total_in_cents = 0;
         err = 0;
         price_list.delete();
       end
-      else if (i.load) begin
-        price_list[i.item] = i.price_in_cents;
+      else if (i.dut.load) begin
+        price_list[i.dut.item] = i.dut.price_in_cents;
       end
-      else if (i.equals) begin
-        if (price_list.exists(i.item)) begin
-          total_in_cents = i.qty * price_list[i.item];
+      else if (i.dut.equals) begin
+        if (price_list.exists(i.dut.item)) begin
+          total_in_cents = i.dut.qty * price_list[i.dut.item];
           err = 0;
         end
         else begin
