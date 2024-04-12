@@ -31,4 +31,6 @@ begin : step_parameter_get_args\
 
 `define step_parameter_get_args_end end : step_parameter_get_args
 
+`define get_scope_name(d) ($sformatf("%m"))
+
 `endif // BATHTUB_MACROS_SV
